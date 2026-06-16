@@ -3,10 +3,9 @@
 set -euo pipefail
 
 TARGET_DISK="/dev/vdb"
-LFS_ROOT="/mnt/lfs"
 
 echo "========================================================"
-echo " Starting Automated Disk Layout for ScamOS "
+echo " Starting Automated Disk Layout"
 echo "========================================================"
 
 echo "[*] Wiping partition table on $TARGET_DISK..."
@@ -44,17 +43,8 @@ echo "[*] Engaging swap memory..."
 sudo swapon "$PART_SWAP"
 
 echo "[*] Mounting root subvolume..."
-LFS=/mnt/lfs
 sudo mkdir -p "$LFS"
-sudo mount -o subvol=@lfs "$PART_ROOT" "$LFS"
-
-echo "[*] Creating working directories..."
-sudo mkdir -v $LFS/sources
-sudo chmod -v a+wt $LFS/sources
-
-echo "[*] Downloading sources..."
-wget --input-file=wget-list-systemd --continue --directory-prefix=$LFS/sources
-
+sudo mount -o "subvol=@lfs" "$PART_ROOT" "$LFS"
 
 echo "========================================================"
 echo " Target Environment Layout Status "

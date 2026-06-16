@@ -5,7 +5,7 @@ SHELL := /bin/bash
 SESSION := --connect qemu:///session
 
 VM_NAME := LFS-host
-RAM_MB := 4096
+RAM_MB := 8192
 VCPUS := 12
 
 SSH_KEY ?= ${HOME}/.ssh/id_rsa.pub
