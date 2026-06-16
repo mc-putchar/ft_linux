@@ -1,0 +1,45 @@
+#cloud-config
+disable_root: false
+
+packages:
+  - base-devel
+  - gawk
+  - texinfo
+  - bison
+
+users:
+  - name: lfs
+    ssh_authorized_keys:
+      - "<SSH_KEY>"
+    groups: users
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: false
+    passwd: "<PASSWD_HASH>"
+
+chpasswd:
+  expire: false
+
+write_files:
+  - path: /etc/skel/.bash_profile
+    owner: root:root
+    permissions: "0644"
+    content: |
+      exec env -i HOME=$HOME TERM=$TERM PS1='[mc_linux]\u:\w\$ ' /bin/bash
+
+  - path: /etc/skel/.bashrc
+    owner: root:root
+    permissions: "0644"
+    content: |
+      set +h
+      umask 022
+      LFS=/mnt/lfs
+      LC_ALL=POSIX
+      LFS_TGT=$(uname -m)-lfs-linux-gnu
+      PATH=/tools/bin:/bin:/usr/bin
+      export LFS LC_ALL LFS_TGT PATH
+
+runcmd:
+  - [ln, -sf, bash, /bin/sh]
+  - [mkdir, -p, /mnt/lfs]
+  - [chown, -R, lfs:users, /mnt/lfs]
