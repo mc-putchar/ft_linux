@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="7.0.10"
+VERSION="7.0.12"
 LOGIN="$USER"
 KERNEL_DIR="/usr/src/kernel-$VERSION"
 
