@@ -5,12 +5,17 @@ set -euo pipefail
 compilation_wrap() {
     local pkg="$1"
     local compile_cmd="$2"
+    local post_hook="$3"
 
     cd $LFS/sources
-    tar -xf $pkg
+    tar xf $pkg
     cd $(basename $pkg .tar.xz)
 
     time eval $compile_cmd
+
+    if [ -n "$post_hook" ]; then
+        eval $post_hook
+    fi
 
     cd $LFS/sources
     rm -rf $(basename $pkg .tar.xz)
@@ -19,14 +24,19 @@ compilation_wrap() {
 
 # binutils
 BINUTILS_TAR="binutils-2.46.0.tar.xz"
-BINUTILS_CMP_CMD="mkdir -v build && cd build && ../configure --prefix=$LFS/tools \
-             --with-sysroot=$LFS \
-             --target=$LFS_TGT   \
-             --disable-nls       \
-             --enable-gprofng=no \
-             --disable-werror    \
-             --enable-new-dtags  \
-             --enable-default-hash-style=gnu && make && make install;"
+BINUTILS_CMP_CMD="mkdir -v build \
+            && cd build \
+            && ../configure                     \
+             --prefix=$LFS/tools                \
+             --with-sysroot=$LFS                \
+             --target=$LFS_TGT                  \
+             --disable-nls                      \
+             --enable-gprofng=no                \
+             --disable-werror                   \
+             --enable-new-dtags                 \
+             --enable-default-hash-style=gnu    \
+            && make \
+            && make install;"
 
 compilation_wrap "$BINUTILS_TAR" "$BINUTILS_CMP_CMD"
 
@@ -57,9 +67,10 @@ GCC_CMP_CMD="tar -xf ../mpfr-4.2.2.tar.xz && mv -v mpfr-4.2.2 mpfr \
              --disable-libvtv          \
              --disable-libstdcxx       \
              --enable-languages=c,c++  \
-            && make \
+             CXXFLAGS="-std=gnu++17"   \
+            && make -j1 # sadly, parralel jobs here often result with error
             && make install;"
 GCC_POST_HOOK="cd .. && cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
             `dirname $($LFS_TGT-gcc -print-libgcc-file-name)`/include/limits.h"
 
-compilation_wrap "$GCC_TAR" "$GCC_CMP_CMD"
+compilation_wrap "$GCC_TAR" "$GCC_CMP_CMD" "$GCC_POST_HOOK"

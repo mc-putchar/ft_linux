@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-LFS_PKGS_MIRROR="https://mirror.dogado.de/LFS/lfs-packages/13.0"
+LFS_PKGS_MIRROR="https://www.linuxfromscratch.org/lfs/view/13.0-systemd"
 
 [ ! -e /etc/bash.bashrc ] || sudo mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
 
@@ -11,11 +11,11 @@ sudo mkdir -v $LFS/sources
 sudo chmod -v a+wt $LFS/sources
 
 pushd $LFS/sources
-    wget "$LFS_PKGS_MIRROR/wget-list"
+    wget "$LFS_PKGS_MIRROR/wget-list-systemd"
     wget "$LFS_PKGS_MIRROR/md5sums"
 
     echo "[*] Downloading sources..."
-    if ! wget --input-file=wget-list --continue --directory-prefix=$LFS/sources; then
+    if ! wget --input-file=wget-list-systemd --continue --directory-prefix=$LFS/sources; then
         echo "Failed to download sources!"
         exit 1
     fi
