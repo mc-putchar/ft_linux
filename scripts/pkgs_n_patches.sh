@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-LFS_PKGS_MIRROR="https://www.linuxfromscratch.org/lfs/view/13.0-systemd"
+LFS_PKGS_MIRROR="https://www.linuxfromscratch.org/lfs/view/systemd"
 
 [ ! -e /etc/bash.bashrc ] || sudo mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
 
@@ -25,6 +25,8 @@ pushd $LFS/sources
         exit 1
     fi
 popd
+
+sudo chown root:root $LFS/sources/*
 
 echo "[*] Creating symlinks..."
 sudo mkdir -pv $LFS/{etc,var} $LFS/usr/{bin,lib,sbin}

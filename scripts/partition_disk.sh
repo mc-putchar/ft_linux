@@ -3,6 +3,7 @@
 set -euo pipefail
 
 TARGET_DISK="/dev/vdb"
+LFS="/mnt/lfs"
 
 echo "========================================================"
 echo " Starting Automated Disk Layout"
