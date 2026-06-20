@@ -3,6 +3,7 @@ AUTHORS := mcutura
 
 SHELL := /bin/bash
 SESSION := --connect qemu:///session
+NOVNC_PROXY := ~/sgoinfre/noVNC/utils/novnc_proxy
 
 VM_NAME := LFS-host
 RAM_MB := 8192
@@ -34,6 +35,7 @@ CYB := \033[1;36m
 NC  := \033[0m
 
 .PHONY: help start stop console ssh clean install dump part-lfs
+.PHONY: snapshot revert snapshot-list vnc
 
 help:	# Show this helpful message
 	@awk 'BEGIN { FS = ":.*#"; \
@@ -108,8 +110,6 @@ part-lfs:	# Run LFS partitioning
 		lfs@localhost -i $(SSH_KEY) -p $(HOST_SSH_PORT) 'bash -s' < scripts/partition_disk.sh
 
 # Backup plans
-.PHONY: snapshot revert snapshot-list
-
 snapshot:	# Create a checkpoint (Usage: make snapshot TAG=pre-nuked)
 	@if [ -z "$(TAG)" ]; then echo -e "$(RED)Error: Choose a name. Example: make snapshot TAG=pre-nuked$(NC)"; exit 1; fi
 	virsh $(SESSION) snapshot-create-as $(VM_NAME) $(TAG) "Checkpoint at $(TAG)" --atomic
@@ -120,3 +120,8 @@ revert:		# Revert to a checkpoint (Usage: make revert TAG=pre-nuked)
 
 snapshot-list:	# List all existing VM checkpoints
 	virsh $(SESSION) snapshot-list $(VM_NAME)
+
+# Graphical UI
+vnc:		# Connect to the VM via VNC
+	virsh $(SESSION) domdisplay LFS-host
+	$(NOVNC_PROXY) --vnc localhost:5901 --listen 6080 2>/dev/null

@@ -45,6 +45,7 @@ sudo swapon "$PART_SWAP"
 
 echo "[*] Mounting root subvolume..."
 sudo mkdir -p "$LFS"
+# sudo mount -o "subvol=@lfs" /dev/vda3 "$LFS"
 sudo mount -o "subvol=@lfs" "$PART_ROOT" "$LFS"
 
 echo "========================================================"
