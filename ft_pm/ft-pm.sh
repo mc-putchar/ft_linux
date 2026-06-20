@@ -51,6 +51,7 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
 fi
 
+export JOBS=$(nproc)
 source "${RECIPE_DIR}/${PACKAGE}/Pkgfile"
 
 export WORK_DIR="/tmp/build-${name}"
@@ -73,6 +74,9 @@ for src in "${source[@]}"; do
         tar -xf "${SRC_DIR}/${filename}"
     elif [[ "$filename" == *.tar.lz ]]; then
         tar --lzip -xf "${SRC_DIR}/${filename}"
+    elif [[ "$filename" == *.zip ]]; then
+        mkdir -p "$name-$version"
+        unzip -q "${SRC_DIR}/${filename}" -d "$name-$version"
     fi
 done
 
