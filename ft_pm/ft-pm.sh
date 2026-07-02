@@ -91,7 +91,7 @@ echo "=== Installing ${name} to Live System ==="
 tar -c . | tar -x -C /
 
 # TODO: evaluate post-install actions/triggers
-# e.g., ldconfig, fc-cache, etc.
+# like ldconfig, fc-cache, etc.
 ldconfig
 
 echo "Successfully installed ${name}-${version}!"
