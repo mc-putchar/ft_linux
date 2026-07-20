@@ -57,7 +57,15 @@ source "${RECIPE_DIR}/${PACKAGE}/Pkgfile"
 export WORK_DIR="/tmp/build-${name}"
 export PKG="/tmp/fakeroot-${name}"
 
-rm -rf "$WORK_DIR" "$PKG"
+rm -rf "$PKG"
+if [ -d "$WORK_DIR" ]; then
+    echo "  Build files detected"
+    read -p "  Remove build files? [y/N] " -n 1 -r REPLY
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        rm -rf "$WORK_DIR"
+    fi
+fi
 mkdir -p "$WORK_DIR" "$PKG"
 
 cd "$WORK_DIR"
@@ -88,7 +96,9 @@ cd "$PKG"
 find . -not -type d | sed 's|^\.||' > "${VAR_DB}/${name}.files"
 
 echo "=== Installing ${name} to Live System ==="
-tar -c . | tar -x -C /
+while read -r file; do
+    install -Dt "$(dirname $file)" "$PKG/$file"
+done < "${VAR_DB}/${name}.files"
 
 # TODO: evaluate post-install actions/triggers
 # like ldconfig, fc-cache, etc.
